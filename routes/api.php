@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\IngredientsController;
 use App\Http\Controllers\Api\RecipesController;
+use App\Http\Controllers\Api\CustomersController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -43,4 +44,12 @@ Route::prefix('ingredients')->group(function(){
     Route::get('/{slug}',[IngredientsController::class,'show']);
     Route::put('/{slug}',[IngredientsController::class,'update']);
     Route::delete('/{slug}',[IngredientsController::class,'destroy']);
+});
+
+Route::prefix('customers')->group(function(){
+    Route::get('/',[CustomersController::class,'index']);
+    Route::post('/store',[CustomersController::class,'store']);
+    Route::get('/{slug}',[CustomersController::class,'show']);
+    Route::put('/{slug}',[CustomersController::class,'update']);
+    Route::delete('/{slug}',[CustomersController::class,'destroy']);
 });
