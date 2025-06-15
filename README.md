@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/6929121/87441911-486bf600-c611-11ea-9d45-94c215733cf7.png" width="200" alt="RestoMAX Logo">
 </p>
 
-<h1 align="center">RestoMAX API</h1>
+<h1 align="center">RestoMAX</h1>
 
 <p align="center">
   <strong>The Digital Brain for Your Modern F&B Business.</strong>
