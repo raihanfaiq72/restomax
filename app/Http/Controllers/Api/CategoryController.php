@@ -19,10 +19,10 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $validator = [
+        $request->validate([
             'name'  => 'required',
             'slug'  => 'required'
-        ];
+        ]);
 
         try{
             $category = Category::create([
@@ -42,9 +42,9 @@ class CategoryController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::where('slug',$slug)->first();
 
         return response()->json([
             'message'   => 'show category by id',
@@ -52,14 +52,15 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request,$slug)
     {
-        $validator = [
+        $request->validate([
             'name'  => 'required',
             'slug'  => 'required'
-        ];
+        ]);
+        
         try{
-            $category = Category::where('id',$id)->first();
+            $category = Category::where('slug',$slug)->first();
             $category->update([
                 'name'  => $request->name,
                 'slug'  => Str::slug($request->name)
@@ -76,9 +77,9 @@ class CategoryController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy($slug)
     {
-        $category = Category::where('id',$id)->first();
+        $category = Category::where('slug',$slug)->first();
         $category->delete();
 
         return response()->json([
