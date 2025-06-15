@@ -1,61 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://user-images.githubusercontent.com/6929121/87441911-486bf600-c611-11ea-9d45-94c215733cf7.png" width="200" alt="RestoMAX Logo">
 </p>
 
-## About Laravel
+<h1 align="center">RestoMAX API</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <strong>The Digital Brain for Your Modern F&B Business.</strong>
+  <br />
+  A robust backend designed to orchestrate every aspect of restaurant operations, from table-side orders to profitability reports in your hands.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+    <img alt="Laravel" src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" />
+    <img alt="MySQL" src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" />
+    <img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D" />
+    <a href="#"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge"></a>
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+**RestoMAX** is more than just a Point of Sale (POS). It is a centralized API platform built with an **API-first** approach using Laravel 11+. It's designed to be the single source of truth consumed by various front-ends, whether it's a cashier application (Vue.js SPA), a Kitchen Display System (KDS), or an analytical dashboard for managers.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ✨ Why RestoMAX is Different
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Icon | Key Feature | Brief Description |
+| :--- | :--- | :--- |
+| 🍳 | **Smart Stock Automation** | Ingredient stock is automatically deducted upon every completed order, triggered by a reactive and efficient **Event-Driven** system. |
+| 💸 | **Flexible POS API** | Endpoints ready to handle complex order flows, payments, and table management. |
+| 👥 | **Staff & Access Control** | Secure every endpoint with role-based middleware (`owner`, `manager`, `cashier`) using **Laravel Sanctum**. |
+| 📈 | **Analytics-Ready** | The database structure is designed to easily generate sales reports, product profitability, and Cost of Goods Sold (COGS) analysis. |
+| 🍜 | **Dynamic Recipe Management** | Link products with their ingredient recipes through an intuitive many-to-many relationship. |
+| 💖 | **CRM & Loyalty Foundation** | Collect customer data and build a loyalty program to increase retention. |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## ⚡️ API Endpoint Examples
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Here are some of the main available endpoints:
 
-### Premium Partners
+| Method | Endpoint | Description | Required Access Role |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/login` | Log in a user to get an API Token. | Public |
+| `GET` | `/api/products` | Get a list of all products. | Authenticated |
+| `POST` | `/api/orders` | Create a new order. | `cashier` |
+| `POST` | `/api/orders/{order}/complete` | Complete an order & trigger stock deduction. | `cashier` |
+| `POST` | `/api/product/{product:slug}/recipes` | Add an ingredient to a product's recipe. | `manager` |
+| `GET` | `/api/reports/sales` | Get sales reports. | `manager`, `owner` |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🛠️ Getting Started (Backend Installation)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/username/restomax.git](https://github.com/username/restomax.git)
+    cd restomax
+    ```
 
-## Code of Conduct
+2.  **Install dependencies:**
+    ```bash
+    composer install
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3.  **Setup file environment:**
+    ```bash
+    cp .env.example .env
+    ```
 
-## Security Vulnerabilities
+4.  **Generate application key:**
+    ```bash
+    php artisan key:generate
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5.  **Configure your database in the `.env` file, then run the migrations:**
+    ```bash
+    php artisan migrate
+    ```
 
-## License
+6.  **Run the development server:**
+    ```bash
+    php artisan serve
+    ```
+    Your API is now running at `http://localhost:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🗺️ Development Roadmap
+
+* [ ] **Payroll Module:** Automate salary calculation based on attendance and incentives.
+* [ ] **Online Order Integration:** A gateway to receive orders from GoFood/GrabFood.
+* [ ] **Real-time Analytics Dashboard:** Visualize sales and inventory data.
+* [ ] **API Documentation (Swagger/OpenAPI):** Create interactive documentation for all endpoints.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👋 Follow me at
+<a href="https://github.com/dr5hn/"><img alt="Github @dr5hn" src="https://img.shields.io/static/v1?logo=github&message=Github&color=black&style=flat-square&label=" /></a> <a href="https://twitter.com/dr5hn/"><img alt="Twitter @dr5hn" src="https://img.shields.io/static/v1?logo=twitter&message=Twitter&color=black&style=flat-square&label=" /></a> <a href="https://www.linkedin.com/in/dr5hn/"><img alt="LinkedIn @dr5hn" src="https://img.shields.io/static/v1?logo=linkedin&message=LinkedIn&color=black&style=flat-square&label=&link=https://twitter.com/dr5hn" /></a>
