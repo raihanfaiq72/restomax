@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\IngredientsController;
+use App\Http\Controllers\Api\RecipesController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -28,6 +29,12 @@ Route::prefix('product')->group(function(){
     Route::get('/{slug}',[ProductController::class,'show']);
     Route::put('/{slug}',[ProductController::class,'update']);
     Route::delete('/{slug}',[ProductController::class,'destroy']);
+
+    // route resep
+    Route::get('{product:slug}/recipes', [RecipesController::class, 'index']);
+    Route::post('{product:slug}/recipes', [RecipesController::class, 'store']);
+    Route::put('{product:slug}/recipes/{ingredient}', [RecipesController::class, 'update']);
+    Route::delete('{product:slug}/recipes/{ingredient}', [RecipesController::class, 'destroy']);
 });
 
 Route::prefix('ingredients')->group(function(){

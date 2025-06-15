@@ -20,8 +20,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required',
-            'slug'  => 'required'
+            'name'  => 'required'
         ]);
 
         try{
@@ -58,7 +57,7 @@ class CategoryController extends Controller
             'name'  => 'required',
             'slug'  => 'required'
         ]);
-        
+
         try{
             $category = Category::where('slug',$slug)->first();
             $category->update([

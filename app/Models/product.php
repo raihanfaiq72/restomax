@@ -16,4 +16,10 @@ class product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function ingredients()
+    {
+        // produk memiliki banyak bahan baku dari tabel 'recipes'
+        return $this->belongsToMany(Ingredient::class, 'recipes')->withPivot('quantity_needed');
+    }
 }

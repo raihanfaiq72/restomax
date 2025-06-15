@@ -11,4 +11,10 @@ class ingredient extends Model
     protected $fillable = [
         'name','slug','stock_quantity','unit','low_stock_threshold'
     ];
+
+    public function products()
+    {
+        // bahan baku bisa digunakan oleh banyak produk
+        return $this->belongsToMany(Product::class, 'recipes')->withPivot('quantity_needed');
+    }
 }
