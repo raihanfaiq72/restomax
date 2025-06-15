@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug');
             $table->float('stock_quantity');
             $table->string('unit');
             $table->float('low_stock_threshold');

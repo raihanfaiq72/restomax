@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\IngredientsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,4 +28,12 @@ Route::prefix('product')->group(function(){
     Route::get('/{slug}',[ProductController::class,'show']);
     Route::put('/{slug}',[ProductController::class,'update']);
     Route::delete('/{slug}',[ProductController::class,'destroy']);
+});
+
+Route::prefix('ingredients')->group(function(){
+    Route::get('/',[IngredientsController::class,'index']);
+    Route::post('/store',[IngredientsController::class,'store']);
+    Route::get('/{slug}',[IngredientsController::class,'show']);
+    Route::put('/{slug}',[IngredientsController::class,'update']);
+    Route::delete('/{slug}',[IngredientsController::class,'destroy']);
 });
