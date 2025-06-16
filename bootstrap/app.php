@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
+
 use App\Http\Middleware\CashMid;
 use App\Http\Middleware\KitStafMid;
 use App\Http\Middleware\ManMid;
@@ -15,16 +18,27 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'owner' => OwnerMid::class,
-            'manager'=> ManMid::class,
-            'Kitchen Staff'=> KitStafMid::class,
-            'cachier'   => CashMid::class
+            'owner' => \App\Http\Middleware\OwnerMid::class,
+            'manager'=> \App\Http\Middleware\ManMid::class,
+            'kitchen' => \App\Http\Middleware\KitStafMid::class,
+            'cashier'   => \App\Http\Middleware\CashMid::class
+        ]);
+
+        $middleware->appendToGroup('api', [
+            \App\Http\Middleware\ForceJsonResponse::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Not authenticated'
+                ], 401);
+            }
+            return $e->render($request);
+        });
     })
     ->withEvents([ 
         'discover' => true,

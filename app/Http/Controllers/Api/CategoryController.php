@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str; 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 
 class CategoryController extends Controller
@@ -17,17 +19,13 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name'  => 'required'
-        ]);
-
         try{
-            $category = Category::create([
-                'name'  => $request->name,
-                'slug'  => Str::slug($request->name)
-            ]);
+            $validated = $request->validated();
+            $validated['slug'] = Str::slug($validated['name']);
+            
+            $category = category::create($validated);
 
             return response()->json([
                 'message'   => 'category created successfully',
@@ -51,19 +49,15 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request,$slug)
+    public function update(UpdateCategoryRequest $request,$slug)
     {
-        $request->validate([
-            'name'  => 'required',
-            'slug'  => 'required'
-        ]);
-
         try{
+            $validated = $request->validated();
+            if (isset($validated['name'])) {
+                $validated['slug'] = Str::slug($validated['name']);
+            }
             $category = Category::where('slug',$slug)->first();
-            $category->update([
-                'name'  => $request->name,
-                'slug'  => Str::slug($request->name)
-            ]);
+            $category->update($validated);
 
             return response()->json([
                 'message'   => 'Category update succesfully'

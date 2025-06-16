@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str; 
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 use App\Models\product;
 
@@ -18,29 +20,12 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $request->validate([
-            'name'  => 'required',
-            'sku'   => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'category_id'=> 'required',
-            'is_available'=>'required'
-        ]);
-
         try{
-            $product = [
-                'name'  => $request->name,
-                'sku'   => $request->sku,
-                'description'=>$request->description,
-                'price'=> $request->price,
-                'category_id'=> $request->category_id,
-                'is_available'=> $request->is_available,
-                'slug'  => Str::slug($request->name)
-            ];
-
-            product::create($product);
+            $validated = $request->validated();
+            $validated['slug'] = Str::slug($validated['name']);
+            $product = product::create($validated);
 
             return response()->json([
                 'message'   => 'Product store success',
@@ -64,28 +49,17 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(Request $request,$slug)
+    public function update(UpdateProductRequest $request,$slug)
     {
-        $product = product::where('slug',$slug)->first();
-        $request->validate([
-            'name'  => 'required',
-            'sku'   => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'category_id'=> 'required',
-            'is_available'=>'required'
-        ]);
-
         try{
-            $product->update([
-                'name'  => $request->name,
-                'sku'   => $request->sku,
-                'description'=>$request->description,
-                'price'=> $request->price,
-                'category_id'=> $request->category_id,
-                'is_available'=> $request->is_available,
-                'slug'  => Str::slug($request->name)
-            ]);
+            $validated = $request->validated();
+
+            if (isset($validated['name'])) {
+                $validated['slug'] = Str::slug($validated['name']);
+            }
+
+            $product = product::where('slug',$slug)->first();
+            $product->update($validated);
 
             return response()->json([
                 'message'   => 'Update product successfully',

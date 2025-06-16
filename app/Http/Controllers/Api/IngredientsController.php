@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str; 
+use App\Http\Requests\StoreIngredientsRequest;
+use App\Http\Requests\UpdateIngredientsRequest;
 
 use App\Models\ingredient;
 
@@ -18,23 +20,12 @@ class IngredientsController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreIngredientsRequest $request)
     {
-        $request->validate([
-            'name'  => 'required',
-            'stock_quantity'=>'required',
-            'unit'=>'required',
-            'low_stock_threshold'=>'required',
-        ]);
-
         try{
-            $ingredients = ingredient::create([
-                'name'  => $request->name,
-                'stock_quantity'=> $request->stock_quantity,
-                'unit'=>$request->unit,
-                'low_stock_threshold'=>$request->low_stock_threshold,
-                'slug'=>Str::slug($request->name)
-            ]);
+            $validated = $request->validated();
+            $validated['slug'] = Str::slug($validate['name']);
+            $ingredients = ingredient::create($validated);
 
             return response()->json([
                 'message'=>'Ingredients store successfully',
@@ -57,24 +48,16 @@ class IngredientsController extends Controller
         ]);
     }
 
-    public function update(Request $request,$slug)
+    public function update(UpdateIngredientsRequest $request,$slug)
     {
-        $request->validate([
-            'name'  => 'required',
-            'stock_quantity'=>'required',
-            'unit'=>'required',
-            'low_stock_threshold'=>'required',
-        ]);
-
         try{
-            $ingredients = ingredient::where('slug',$slug)->first();
-            $ingredients->update([
-                'name'  => $request->name,
-                'stock_quantity'=> $request->stock_quantity,
-                'unit'=>$request->unit,
-                'low_stock_threshold'=>$request->low_stock_threshold,
-                'slug'=>Str::slug($request->name)
-            ]);
+            $validated = $request->validated();
+            if(isset($validated['name'])){
+                $valdated['slug'] = Str::slug($valdated['name']);
+            }
+
+            $ingredients = ingredients::where('slug',$slug)->first();
+            $ingredients->update($valdated);
 
             return response()->json([
                 'message'=>'Ingredients update successfully',

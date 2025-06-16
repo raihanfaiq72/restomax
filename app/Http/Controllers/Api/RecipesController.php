@@ -51,7 +51,6 @@ class RecipesController extends Controller
     
     public function destroy(product $product, ingredient $ingredient)
     {
-        // 'detach' untuk menghapus baris dari tabel pivot
         $product->ingredients()->detach($ingredient->id);
 
         return response()->json([
