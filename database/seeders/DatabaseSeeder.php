@@ -25,8 +25,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Test User',
-            'username' => 'user',
-            'role'  => 'owner'
+            'email' => 'admin@mail.com',
         ]);
 
         category::insert([
