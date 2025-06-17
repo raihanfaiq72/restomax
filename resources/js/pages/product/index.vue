@@ -2,12 +2,12 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@/types';
-import CategoryCrud from '@/components/CategoryCrud.vue';
-import { type Category } from '@/components/CategoryCrud.vue';
+import ProductCrud from '@/components/ProductCrud.vue';
+import { type Product, type Category } from '@/components/ProductCrud.vue'; 
 
-// Terima props 'categories' dari CategoryController@index
 defineProps<{
   categories: Category[];
+  products: Product[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -16,10 +16,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-    <Head title="Manajemen Kategori" />
+    <Head title="Manajemen Produk" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-4 md:p-6">
-             <CategoryCrud :categories="categories" />
+        <div class="p-4 sm:p-6 lg:p-8">
+            <ProductCrud :products="products" :categories="categories" />
         </div>
     </AppLayout>
 </template>

@@ -14,7 +14,7 @@ use App\Models\category;
 
 class CategoryController extends Controller
 {
-public function index()
+    public function index()
     {
         return Inertia::render('category/index', [
             'categories' => Category::latest()->get(),

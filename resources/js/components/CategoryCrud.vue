@@ -18,137 +18,98 @@
     import { Label } from '@/components/ui/label';
     import { toast } from 'vue-sonner';
 
-    // Tipe data 
+    // Tipe data (export agar bisa di-import oleh parent)
     export interface Category {
-    id: number;
-    name: string;
-    slug: string;
-    created_at: string;
-    updated_at: string;
+        id: number;
+        name: string;
+        slug: string;
+        created_at: string;
+        updated_at: string;
     }
 
-    // nilai default ,array kosong agar tidak error 
-    const props = withDefaults(defineProps<{categories: Category[];}>(), {
+    // Terima props dan berikan nilai default array kosong agar tidak error
+    const props = withDefaults(defineProps<{categories: Category[]}>(), {
         categories: () => [],
     });
 
-    // SECTION: State Management untuk Aksi UI
+    // State Management untuk Aksi UI
     const isDialogOpen = ref(false);
     const isAlertOpen = ref(false);
     const editingCategory = ref<Category | null>(null);
     const categoryToDelete = ref<Category | null>(null);
-
     const dialogTitle = computed(() => editingCategory.value ? 'Edit Kategori' : 'Tambah Kategori Baru');
+    
+    // Form Handling dengan Inertia.js
+    const form = useForm({ name: '' });
 
-    // SECTION: Form Handling dengan Inertia.js
-    const form = useForm({
-        name: '',
-    });
-
-    // SECTION: Logika Handler Aksi
-    // Fungsi untuk membuka dialog (baik untuk create maupun update)
-    const openDialog = (category: Category | null) => {
-        editingCategory.value = category;
-        if (category) {
-            form.name = category.name;
-        } else {
-            form.reset();
-        }
-        form.clearErrors();
-        isDialogOpen.value = true;
-    };
-
-    // Fungsi untuk membuka dialog konfirmasi hapus
-    const openDeleteAlert = (category: Category) => {
-    categoryToDelete.value = category;
-    isAlertOpen.value = true;
-    };
-
-    // Fungsi yang dijalankan saat form di-submit
-    const onSubmit = () => {
-    if (editingCategory.value) {
-        // UPDATE: Kirim request PUT ke backend menggunakan slug
-        form.put(route('category.update', editingCategory.value.slug), {
-        preserveScroll: true,
-        onSuccess: () => {
-            isDialogOpen.value = false;
-            form.reset();
-        },
-        });
-    } else {
-        // CREATE: Kirim request POST ke backend
-        form.post(route('category.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            isDialogOpen.value = false;
-            form.reset();
-        },
-        });
-    }
-    };
-
-    // Fungsi untuk mengkonfirmasi dan menjalankan aksi hapus
-    const confirmDelete = () => {
-    if (categoryToDelete.value) {
-        // DELETE: Kirim request DELETE ke backend menggunakan slug
-        router.delete(route('category.destroy', categoryToDelete.value.slug), {
-        preserveScroll: true,
-        onSuccess: () => {
-            categoryToDelete.value = null;
-        },
-        });
-    }
-    isAlertOpen.value = false;
-    };
-
-    // SECTION: Menampilkan Flash Message (Notifikasi) dari Backend
-    const page = usePage();
-    watch(() => page.props.flash, (flash) => {
-    if (flash && flash.success) {
-        toast.success(flash.success as string);
-    }
-    }, { deep: true });
-
-    // SECTION: Konfigurasi Data Table (TanStack Vue Table)
+    // Logika Handler Aksi
+    const openDialog = (category: Category | null) => { editingCategory.value = category; if (category) { form.name = category.name; } else { form.reset(); } form.clearErrors(); isDialogOpen.value = true; };
+    const openDeleteAlert = (category: Category) => { categoryToDelete.value = category; isAlertOpen.value = true; };
+    const onSubmit = () => { if (editingCategory.value) { form.put(route('categories.update', editingCategory.value.slug), { preserveScroll: true, onSuccess: () => { isDialogOpen.value = false; toast.success(`Kategori "${form.name}" berhasil diperbarui.`); form.reset(); }, }); } else { form.post(route('categories.store'), { preserveScroll: true, onSuccess: () => { isDialogOpen.value = false; toast.success(`Kategori "${form.name}" berhasil ditambahkan.`); form.reset(); }, }); } };
+    const confirmDelete = () => { if (categoryToDelete.value) { const deletedCategoryName = categoryToDelete.value.name; router.delete(route('categories.destroy', categoryToDelete.value.slug), { preserveScroll: true, onSuccess: () => { categoryToDelete.value = null; toast.success(`Kategori "${deletedCategoryName}" telah dihapus.`); }, }); } isAlertOpen.value = false; };
+    
+    // Konfigurasi Kolom Data Table
     const columns: ColumnDef<Category>[] = [
-        { id: 'select', header: ({ table }) => h(Checkbox, { checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'), 'onUpdate:checked': value => table.toggleAllPageRowsSelected(!!value), 'aria-label': 'Select all' }), cell: ({ row }) => h(Checkbox, { checked: row.getIsSelected(), 'onUpdate:checked': value => row.toggleSelected(!!value), 'aria-label': 'Select row' }), enableSorting: false, enableHiding: false },
+        { id: 'select', header: ({ table }) => h(Checkbox, { checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'), 'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(!!value), 'aria-label': 'Select all' }), cell: ({ row }) => h(Checkbox, { checked: row.getIsSelected(), 'onUpdate:checked': (value: boolean) => row.toggleSelected(!!value), 'aria-label': 'Select row' }), enableSorting: false, enableHiding: false },
         { accessorKey: 'name', header: ({ column }) => h(Button, { variant: 'ghost', onClick: () => column.toggleSorting(column.getIsSorted() === 'asc') }, () => ['Nama Kategori', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]), cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')) },
         { accessorKey: 'created_at', header: 'Tanggal Dibuat', cell: ({ row }) => h('div', {}, new Date(row.getValue('created_at')).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })) },
-        { id: 'actions', enableHiding: false, cell: ({ row }) => {
-            const category = row.original;
-            return h('div', { class: 'relative text-right' }, h(DropdownMenu, {}, [
-                h(DropdownMenuTrigger, { asChild: true }, h(Button, { variant: 'ghost', class: 'h-8 w-8 p-0' }, () => [h('span', { class: 'sr-only' }, 'Buka menu'), h(MoreHorizontal, { class: 'h-4 w-4' })])),
-                h(DropdownMenuContent, { align: 'end' }, [
-                    h(DropdownMenuLabel, {}, 'Aksi'),
-                    h(DropdownMenuItem, { class: "flex items-center gap-2 cursor-pointer", onClick: () => openDialog(category) }, [h(Pencil, { class: 'h-4 w-4' }), 'Edit']),
-                    h(DropdownMenuItem, { class: "flex items-center gap-2 text-red-600 focus:text-red-500 cursor-pointer", onClick: () => openDeleteAlert(category) }, [h(Trash2, { class: 'h-4 w-4' }), 'Hapus']),
-                ]),
-            ]));
-        }},
+        
+        // ==================================================================
+        // === PERBAIKAN UTAMA ADA DI BAGIAN INI (KOLOM ACTIONS) ===
+        // ==================================================================
+        { 
+            id: 'actions', 
+            enableHiding: false, 
+            cell: ({ row }) => {
+                const category = row.original;
+                return h('div', { class: 'relative text-right' }, h(DropdownMenu, {}, {
+                    // Anak-anak komponen dibungkus dalam slot default berbentuk fungsi
+                    default: () => [
+                        h(DropdownMenuTrigger, { asChild: true },
+                            h(Button, { variant: 'ghost', class: 'h-8 w-8 p-0' }, () => [
+                                h('span', { class: 'sr-only' }, 'Buka menu'),
+                                h(MoreHorizontal, { class: 'h-4 w-4' }),
+                            ])
+                        ),
+                        h(DropdownMenuContent, { align: 'end' }, [
+                            h(DropdownMenuLabel, {}, 'Aksi'),
+                            h(DropdownMenuItem, {
+                                class: "flex items-center gap-2 cursor-pointer",
+                                onClick: () => openDialog(category)
+                            }, () => [h(Pencil, { class: 'h-4 w-4' }), 'Edit']),
+                            h(DropdownMenuItem, {
+                                class: "flex items-center gap-2 text-red-600 focus:text-red-500 cursor-pointer",
+                                onClick: () => openDeleteAlert(category)
+                            }, () => [h(Trash2, { class: 'h-4 w-4' }), 'Hapus']),
+                        ]),
+                    ]
+                }));
+            }
+        },
     ];
 
+    // Konfigurasi Instansi Tabel
     const sorting = ref<SortingState>([]);
     const columnFilters = ref<ColumnFiltersState>([]);
     const columnVisibility = ref<VisibilityState>({});
     const rowSelection = ref({});
-
     const table = useVueTable({
-    get data() { return props.categories },
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: updater => (sorting.value = typeof updater === 'function' ? updater(sorting.value) : updater),
-    onColumnFiltersChange: updater => (columnFilters.value = typeof updater === 'function' ? updater(columnFilters.value) : updater),
-    onColumnVisibilityChange: updater => (columnVisibility.value = typeof updater === 'function' ? updater(columnVisibility.value) : updater),
-    onRowSelectionChange: updater => (rowSelection.value = typeof updater === 'function' ? updater(rowSelection.value) : updater),
-    state: {
-        get sorting() { return sorting.value },
-        get columnFilters() { return columnFilters.value },
-        get columnVisibility() { return columnVisibility.value },
-        get rowSelection() { return rowSelection.value },
-    },
+        get data() { return props.categories },
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: updater => (sorting.value = typeof updater === 'function' ? updater(sorting.value) : updater),
+        onColumnFiltersChange: updater => (columnFilters.value = typeof updater === 'function' ? updater(columnFilters.value) : updater),
+        onColumnVisibilityChange: updater => (columnVisibility.value = typeof updater === 'function' ? updater(columnVisibility.value) : updater),
+        onRowSelectionChange: updater => (rowSelection.value = typeof updater === 'function' ? updater(rowSelection.value) : updater),
+        state: {
+            get sorting() { return sorting.value },
+            get columnFilters() { return columnFilters.value },
+            get columnVisibility() { return columnVisibility.value },
+            get rowSelection() { return rowSelection.value },
+        },
     });
 </script>
 
@@ -171,7 +132,7 @@
                     <Button variant="outline" class="ml-auto"> Kolom <ChevronDown class="ml-2 h-4 w-4" /></Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuCheckboxItem v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id" class="capitalize" :checked="column.getIsVisible()" @update:checked="(value) => column.toggleVisibility(!!value)">
+                    <DropdownMenuCheckboxItem v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id" class="capitalize" :checked="column.getIsVisible()" @update:checked="(value: boolean) => column.toggleVisibility(!!value)">
                         {{ column.id === 'created_at' ? 'Tanggal Dibuat' : column.id }}
                     </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
@@ -232,7 +193,7 @@
                 </form>
             </DialogContent>
         </Dialog>
-
+        
         <AlertDialog :open="isAlertOpen" @update:open="isAlertOpen = $event">
             <AlertDialogContent>
                 <AlertDialogHeader>
