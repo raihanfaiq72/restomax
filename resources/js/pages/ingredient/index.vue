@@ -2,25 +2,24 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@/types';
-import ProductCrud from '@/components/ProductCrud.vue';
-import { type Product, type Category } from '@/components/ProductCrud.vue'; 
+import IngredientCrud from '@/components/IngredientCrud.vue';
+import { type Ingredient} from '@/components/IngredientCrud.vue'; 
 
 defineProps<{
-  categories: Category[];
-  products: Product[];
+    ingredients: Ingredient[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: 'dashboard' },
-    { title: 'Product' },
+    { title: 'Dashboard', href: route('dashboard') },
+    { title: 'Ingredients' },
 ];
 </script>
 
 <template>
-    <Head title="Manajemen Produk" />
+    <Head title="Manajemen Bahan Baku" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4 sm:p-6 lg:p-8">
-            <ProductCrud :products="products" :categories="categories" />
+            <IngredientCrud :ingredients="ingredients"/>
         </div>
     </AppLayout>
 </template>
