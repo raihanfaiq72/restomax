@@ -28,6 +28,11 @@ const mainNavItems: NavItem[] = [
         title:'Bahan-Bahan',
         href :'ingredients',
         icon:ShoppingBasket
+    },
+    {
+        title:'Customer',
+        href :'customers',
+        icon:ShoppingBasket
     }
 ];
 
